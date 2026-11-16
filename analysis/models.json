@@ -1,0 +1,10 @@
+{
+ "qwen3-4b": [
+  "Qwen/Qwen3-4B",
+  "1cfa9a7208912126459214e8b04321603b3df60c"
+ ],
+ "qwen3-14b": [
+  "Qwen/Qwen3-14B",
+  "40c069824f4251a91eefaf281ebe4c544efd3e18"
+ ]
+}

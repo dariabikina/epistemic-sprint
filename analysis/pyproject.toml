@@ -1,0 +1,70 @@
+# Copyright (c) 2026 Daria Bikina
+# SPDX-License-Identifier: MIT
+
+[project]
+name = "wu"
+version = "0.1.0"
+description = "Reproducing Wu et al. 2026 (compression, popularity, confidence) on Apple silicon with MLX"
+requires-python = ">=3.14"
+license = "MIT"
+dependencies = [
+  "mlx==0.32.4",
+  "mlx-lm==0.32.2",
+  "transformers==5.22.2",
+  "tokenizers==0.23.3",
+  "huggingface-hub==2.4.0",
+  "numpy==2.5.4",
+  "pyarrow==26.0.1",
+  "matplotlib>=3.10",
+  "umap-learn>=0.5",
+  "seaborn>=0.13",
+]
+
+[project.scripts]
+wu = "wu.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = [{ name = "macos-26-arm64", platform = "osx-arm64", macos = "26.0" }]
+
+[tool.pixi.dependencies]
+python = "3.14.*"
+pytest = "*"
+ipython = ">=9.18.1,<10"
+
+[tool.pixi.pypi-dependencies]
+wu = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+wu = { cmd = "wu", description = "wu {data,ppl,eval,report} --model M [--setting S]" }
+test = { cmd = "pytest tests -q", description = "Matching, metrics and compression checks" }
+# Ground-truth worlds (src/wu/gt): small models trained on sequences whose Bayes predictive is known exactly
+gt = { cmd = "python -m wu.gt.cli", description = "gt {data,train,ladder,compress,inside,control,seeds,show,plot,smoke}; see GT.md" }
+gt-test = { cmd = "pytest tests/test_gt.py -q", description = "Bayes predictives equal the priors' joint densities (chain rule)" }
+gt-smoke = { cmd = "python -m wu.gt.cli smoke", depends-on = ["gt-test"], description = "Every world end to end: tiny pools, 60 steps" }
+gt-data = { cmd = "python -m wu.gt.cli data", description = "Build the frozen pools for every world (fixed seeds, sha256 manifest)" }
+gt-ladder = { cmd = "python -m wu.gt.cli ladder", depends-on = ["gt-smoke"], description = "Train one model per world, simplest first; then notes and plot" }
+gt-show = { cmd = "python -m wu.gt.cli show", description = "Runs so far: floor, excess over Bayes, uncertainty tracking" }
+gt-notes = { cmd = "python -m wu.gt.cli show --write", description = "Regenerate GT-RUNS.md from the run directories" }
+gt-figures = { cmd = "python -m wu.gt.cli figures", description = "Summary figures with intervals and scaling fits -> <GT>/figures (no GPU)" }
+gt-poster = { cmd = "python -m wu.gt.cli poster", description = "Poster figures (one claim each, self-standing) and <GT>/poster/poster.canvas (no GPU)" }
+gt-report = { cmd = "bash scripts/gt_report.sh", description = "E1: confidence-report models (seeds 0, 1), compressed and scored" }
+confidence-overnight = { cmd = "bash scripts/confidence_overnight.sh", description = "L1-L3: facts and marbles for qwen3-8b and qwen3-1.7b, E1 seeds 2-3, reports (about 10 h of GPU)" }
+probs-smoke = { cmd = "wu probs --model qwen3-8b --setting base --n 40", description = "P1 smoke: about 40 facts and controls of the epistemic-probabilities prompts on base (4 min)" }
+probs = { cmd = "bash scripts/probs_queue.sh qwen3-8b", description = "P1: short answers, candidate scores and knows for the 13 qwen3-8b settings (about 4 h of GPU); add a tag, e.g. v2" }
+probs-4b = { cmd = "bash scripts/probs_queue.sh qwen3-4b v1 'base wanda-50 gptq-3 awq-3 gptq-4 awq-4 shortgpt-10'", description = "P1 on the 7 qwen3-4b settings" }
+probs-report = { cmd = "wu probs-report", description = "P1: measures, intervals and figures; --model M [--tag v1] (no GPU)" }
+probs-results = { cmd = "python scripts/probs_results.py", description = "P1: results as CSV (summary and per question), report JSON, figures and short answers in one folder; [--tag v1] [--out DIR] (no GPU)" }
+probs-export = { cmd = "python scripts/probs_export.py", description = "P1: short.jsonl, scores.jsonl, position_stats.jsonl over all settings; --model M [--tag v1]" }
+bridge-popqa = { cmd = "python scripts/bridge_popqa.py", description = "Bridge 1: does compressed Qwen still know when its PopQA answer is wrong? (no GPU)" }
+gt-plot = { cmd = "python -m wu.gt.cli plot", description = "Loss against the Bayes floor, per world (ladder.png)" }
+gt-test-analysis = { cmd = "pytest tests/test_gt_analysis.py -q", description = "Intervals, meta/content split, Jacobians, probes, collapse test" }
+gt-long = { cmd = "bash scripts/gt_long.sh", description = "G3 and C1: longer runs; the Zipf compression experiment (seeds 0, 1)" }
+gt-sweep = { cmd = "bash scripts/gt_zipf_sweep.sh", description = "C2-C5, I1: tokens/param, input knobs, exposure, splices, lenses" }
+gt-seeds = { cmd = "bash scripts/gt_seeds.sh", description = "C1 with seeds 2, 3, and the across-seed table" }
+lint = { cmd = "pixi exec --spec ruff==0.17.5 ruff check src tests scripts && pixi exec --spec ruff==0.17.5 ruff format --check src tests scripts", description = "ruff lint and format check (config: ruff.toml)" }
+fmt = { cmd = "pixi exec --spec ruff==0.17.5 ruff format src tests scripts && pixi exec --spec ruff==0.17.5 ruff check --fix src tests scripts", description = "ruff format and safe fixes" }

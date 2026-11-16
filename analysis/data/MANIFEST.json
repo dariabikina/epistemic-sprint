@@ -1,0 +1,15 @@
+{
+ "popqa-3000.jsonl": {
+  "sha256": "074f63747c360f946d2e1bcaf2447db2781e518f244dfb83ceccb70cd9ce3fd7",
+  "source": "akariasai/PopQA@098765c79ea10a2cb19c828324e33281b8336ec0",
+  "per_bucket": 1000,
+  "seed": 0,
+  "bucket_rule": "sort by s_pop desc (id asc), equal thirds of all 14,267"
+ },
+ "marbles-900.jsonl": {
+  "sha256": "4eda811ee9a10c0162e2c94a0f7bac38f6d4153d66e664ff12b5971c3668a916",
+  "source": "wu.urn.build",
+  "seed": 0,
+  "items": 900
+ }
+}

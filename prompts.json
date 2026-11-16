@@ -1,0 +1,1388 @@
+{
+  "version": "2026-11-15",
+  "system_prompt": null,
+  "system_prompt_note": "No system prompt. Build every prompt with tokenizer.apply_chat_template(messages, add_generation_prompt=True, enable_thinking=False) and record the template used.",
+  "placeholder": "{question}",
+  "fill_rule": "Replace the literal substring {question} with question_<lang> (runs 0-2) or paraphrase_<lang> (runs 3-4). Use str.replace, NOT str.format: some templates contain literal braces.",
+  "conditions": {
+    "natural": {
+      "role": "primary",
+      "description": "The question alone, no length or uncertainty instruction.",
+      "template": {
+        "en": "{question}",
+        "ru": "{question}",
+        "pt": "{question}"
+      }
+    },
+    "scoring": {
+      "role": "probability add-on (no generation)",
+      "description": "Few-shot chat: for each exemplar a user turn (instruction + question) and an assistant turn (prefill + answer); then the target user turn; then the generation prompt with thinking off; then the prefill. Each candidate surface form is scored as the continuation ' ' + form + '<|im_end|>' (leading space inside the candidate; the end-of-turn token makes prefix-sharing forms disjoint). Candidates: candidates.jsonl.",
+      "instruction": {
+        "en": {
+          "capital": "Answer with only the name.",
+          "capital of": "Answer with only the name of the country or region, without explanation.",
+          "place of birth": "Answer with only the name.",
+          "author": "Answer with only this person's name, without explanation.",
+          "composer": "Answer with only this person's name, without explanation.",
+          "director": "Answer with only this person's name, without explanation.",
+          "father": "Answer with only this person's name, without explanation.",
+          "mother": "Answer with only this person's name, without explanation.",
+          "occupation": "Answer with only the occupation, without explanation.",
+          "country": "Answer with only the name of the country, without explanation."
+        },
+        "ru": {
+          "capital": "Ответь одним словом.",
+          "capital of": "Ответь только названием страны или региона, без пояснений.",
+          "place of birth": "Ответь одним словом.",
+          "author": "Ответь только именем этого человека, без пояснений.",
+          "composer": "Ответь только именем этого человека, без пояснений.",
+          "director": "Ответь только именем этого человека, без пояснений.",
+          "father": "Ответь только именем этого человека, без пояснений.",
+          "mother": "Ответь только именем этого человека, без пояснений.",
+          "occupation": "Ответь только названием профессии, без пояснений.",
+          "country": "Ответь только названием страны, без пояснений."
+        },
+        "pt": {
+          "capital": "TODO",
+          "capital of": "TODO",
+          "place of birth": "TODO",
+          "author": "TODO",
+          "composer": "TODO",
+          "director": "TODO",
+          "father": "TODO",
+          "mother": "TODO",
+          "occupation": "TODO",
+          "country": "TODO"
+        }
+      },
+      "instruction_note": "Russian wording by the user (2026-11-15); occupation and country drafted by Claude and approved by the user. «Ответь одним словом.» only where Russian gold is almost always one word (capital 44/44, place of birth 30/32); facts whose Russian gold is several words are excluded from Russian scoring (candidates.jsonl scoring_excluded_langs). English keeps 'only the name' there: 12 English gold answers are multi-word (New York City, Santo Domingo...).",
+      "user_turn": "{instruction} {question}   (instruction = instruction[lang][relation])",
+      "one_word_relations": {
+        "ru": [
+          "capital",
+          "place of birth"
+        ]
+      },
+      "assistant_prefill": {
+        "en": "Answer:",
+        "ru": "Ответ:",
+        "pt": "TODO"
+      },
+      "exemplar_turn": "{assistant_prefill} {answer}",
+      "exemplar_sets": "A (primary) and B (noise floor); never mix. Exemplars are per relation.",
+      "scoring_relations": [
+        "capital",
+        "capital of",
+        "place of birth",
+        "author",
+        "composer",
+        "director",
+        "father",
+        "mother",
+        "occupation",
+        "country"
+      ],
+      "relations_note": "occupation and country are scored with dedicated distractors (candidates.jsonl): country: current sovereign states, neighbours first; occupation: not a true, broader/narrower or commonly co-occurring occupation of the person. Other true answers are candidates with role true_alt (correct for occupation)."
+    },
+    "knows": {
+      "role": "P(IK)-style self-report (separate prompt)",
+      "user_turn": {
+        "en": "Do you know the answer to this question? {question} Answer with just one word, Yes or No.",
+        "ru": "Знаешь ли ты ответ на этот вопрос? {question} Ответь только одним словом, Да или Нет.",
+        "pt": "TODO"
+      },
+      "wording_note": "Wording approved by the user, 2026-11-15.",
+      "assistant_prefill": {
+        "en": "Answer:",
+        "ru": "Ответ:",
+        "pt": "TODO"
+      },
+      "candidates": {
+        "en": [
+          "Yes",
+          "No"
+        ],
+        "ru": [
+          "Да",
+          "Нет"
+        ],
+        "pt": "TODO"
+      },
+      "score": "log P(' Yes<|im_end|>') - log P(' No<|im_end|>') (ru: Да / Нет), compared within a setting; contrast with the fact's gold rank to see whether the model knows that it lost a fact."
+    }
+  },
+  "scoring_exemplars": {
+    "capital": {
+      "A": [
+        {
+          "s_qid": "Q17",
+          "o_qid": "Q1490",
+          "sex": null,
+          "subj": {
+            "en": "Japan",
+            "ru": "Япония",
+            "pt": "Japão"
+          },
+          "answer": {
+            "en": "Tokyo",
+            "ru": "Токио",
+            "pt": "Tóquio"
+          },
+          "question": {
+            "en": "What is the capital of Japan?",
+            "ru": "Япония: какой город является столицей?"
+          }
+        },
+        {
+          "s_qid": "Q114",
+          "o_qid": "Q3870",
+          "sex": null,
+          "subj": {
+            "en": "Kenya",
+            "ru": "Кения",
+            "pt": "Quénia"
+          },
+          "answer": {
+            "en": "Nairobi",
+            "ru": "Найроби",
+            "pt": "Nairóbi"
+          },
+          "question": {
+            "en": "What is the capital of Kenya?",
+            "ru": "Кения: какой город является столицей?"
+          }
+        },
+        {
+          "s_qid": "Q419",
+          "o_qid": "Q2868",
+          "sex": null,
+          "subj": {
+            "en": "Peru",
+            "ru": "Перу",
+            "pt": "Peru"
+          },
+          "answer": {
+            "en": "Lima",
+            "ru": "Лима",
+            "pt": "Lima"
+          },
+          "question": {
+            "en": "What is the capital of Peru?",
+            "ru": "Перу: какой город является столицей?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q20",
+          "o_qid": "Q585",
+          "sex": null,
+          "subj": {
+            "en": "Norway",
+            "ru": "Норвегия",
+            "pt": "Noruega"
+          },
+          "answer": {
+            "en": "Oslo",
+            "ru": "Осло",
+            "pt": "Oslo"
+          },
+          "question": {
+            "en": "What is the capital of Norway?",
+            "ru": "Норвегия: какой город является столицей?"
+          }
+        },
+        {
+          "s_qid": "Q414",
+          "o_qid": "Q1486",
+          "sex": null,
+          "subj": {
+            "en": "Argentina",
+            "ru": "Аргентина",
+            "pt": "Argentina"
+          },
+          "answer": {
+            "en": "Buenos Aires",
+            "ru": "Буэнос-Айрес",
+            "pt": "Buenos Aires"
+          },
+          "question": {
+            "en": "What is the capital of Argentina?",
+            "ru": "Аргентина: какой город является столицей?"
+          }
+        },
+        {
+          "s_qid": "Q869",
+          "o_qid": "Q1861",
+          "sex": null,
+          "subj": {
+            "en": "Thailand",
+            "ru": "Таиланд",
+            "pt": "Tailândia"
+          },
+          "answer": {
+            "en": "Bangkok",
+            "ru": "Бангкок",
+            "pt": "Banguecoque"
+          },
+          "question": {
+            "en": "What is the capital of Thailand?",
+            "ru": "Таиланд: какой город является столицей?"
+          }
+        }
+      ]
+    },
+    "capital of": {
+      "A": [
+        {
+          "s_qid": "Q3114",
+          "o_qid": "Q408",
+          "sex": null,
+          "subj": {
+            "en": "Canberra",
+            "ru": "Канберра",
+            "pt": "Camberra"
+          },
+          "answer": {
+            "en": "Australia",
+            "ru": "Австралия",
+            "pt": "Austrália"
+          },
+          "question": {
+            "en": "What is Canberra the capital of?",
+            "ru": "Столицей чего является Канберра?"
+          }
+        },
+        {
+          "s_qid": "Q1726",
+          "o_qid": "Q980",
+          "sex": null,
+          "subj": {
+            "en": "Munich",
+            "ru": "Мюнхен",
+            "pt": "Munique"
+          },
+          "answer": {
+            "en": "Bavaria",
+            "ru": "Бавария",
+            "pt": "Baviera"
+          },
+          "question": {
+            "en": "What is Munich the capital of?",
+            "ru": "Столицей чего является Мюнхен?"
+          }
+        },
+        {
+          "s_qid": "Q597",
+          "o_qid": "Q45",
+          "sex": null,
+          "subj": {
+            "en": "Lisbon",
+            "ru": "Лиссабон",
+            "pt": "Lisboa"
+          },
+          "answer": {
+            "en": "Portugal",
+            "ru": "Португалия",
+            "pt": "Portugal"
+          },
+          "question": {
+            "en": "What is Lisbon the capital of?",
+            "ru": "Столицей чего является Лиссабон?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q1858",
+          "o_qid": "Q881",
+          "sex": null,
+          "subj": {
+            "en": "Hanoi",
+            "ru": "Ханой",
+            "pt": "Hanói"
+          },
+          "answer": {
+            "en": "Vietnam",
+            "ru": "Вьетнам",
+            "pt": "Vietname"
+          },
+          "question": {
+            "en": "What is Hanoi the capital of?",
+            "ru": "Столицей чего является Ханой?"
+          }
+        },
+        {
+          "s_qid": "Q23436",
+          "o_qid": "Q22",
+          "sex": null,
+          "subj": {
+            "en": "Edinburgh",
+            "ru": "Эдинбург",
+            "pt": "Edimburgo"
+          },
+          "answer": {
+            "en": "Scotland",
+            "ru": "Шотландия",
+            "pt": "Escócia"
+          },
+          "question": {
+            "en": "What is Edinburgh the capital of?",
+            "ru": "Столицей чего является Эдинбург?"
+          }
+        },
+        {
+          "s_qid": "Q270",
+          "o_qid": "Q36",
+          "sex": null,
+          "subj": {
+            "en": "Warsaw",
+            "ru": "Варшава",
+            "pt": "Varsóvia"
+          },
+          "answer": {
+            "en": "Poland",
+            "ru": "Польша",
+            "pt": "Polónia"
+          },
+          "question": {
+            "en": "What is Warsaw the capital of?",
+            "ru": "Столицей чего является Варшава?"
+          }
+        }
+      ]
+    },
+    "place of birth": {
+      "A": [
+        {
+          "s_qid": "Q937",
+          "o_qid": "Q3012",
+          "sex": "male",
+          "subj": {
+            "en": "Albert Einstein",
+            "ru": "Альберт Эйнштейн",
+            "pt": "Albert Einstein"
+          },
+          "answer": {
+            "en": "Ulm",
+            "ru": "Ульм",
+            "pt": "Ulm"
+          },
+          "question": {
+            "en": "In what city was Albert Einstein born?",
+            "ru": "В каком городе родился Альберт Эйнштейн?"
+          }
+        },
+        {
+          "s_qid": "Q5593",
+          "o_qid": "Q8851",
+          "sex": "male",
+          "subj": {
+            "en": "Pablo Picasso",
+            "ru": "Пабло Пикассо",
+            "pt": "Pablo Picasso"
+          },
+          "answer": {
+            "en": "Málaga",
+            "ru": "Малага",
+            "pt": "Málaga"
+          },
+          "question": {
+            "en": "In what city was Pablo Picasso born?",
+            "ru": "В каком городе родился Пабло Пикассо?"
+          }
+        },
+        {
+          "s_qid": "Q255",
+          "o_qid": "Q586",
+          "sex": "male",
+          "subj": {
+            "en": "Ludwig van Beethoven",
+            "ru": "Людвиг ван Бетховен",
+            "pt": "Ludwig van Beethoven"
+          },
+          "answer": {
+            "en": "Bonn",
+            "ru": "Бонн",
+            "pt": "Bona"
+          },
+          "question": {
+            "en": "In what city was Ludwig van Beethoven born?",
+            "ru": "В каком городе родился Людвиг ван Бетховен?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q254",
+          "o_qid": "Q34713",
+          "sex": "male",
+          "subj": {
+            "en": "Wolfgang Amadeus Mozart",
+            "ru": "Вольфганг Амадей Моцарт",
+            "pt": "Wolfgang Amadeus Mozart"
+          },
+          "answer": {
+            "en": "Salzburg",
+            "ru": "Зальцбург",
+            "pt": "Salzburgo"
+          },
+          "question": {
+            "en": "In what city was Wolfgang Amadeus Mozart born?",
+            "ru": "В каком городе родился Вольфганг Амадей Моцарт?"
+          }
+        },
+        {
+          "s_qid": "Q692",
+          "o_qid": "Q189288",
+          "sex": "male",
+          "subj": {
+            "en": "William Shakespeare",
+            "ru": "Уильям Шекспир",
+            "pt": "William Shakespeare"
+          },
+          "answer": {
+            "en": "Stratford-upon-Avon",
+            "ru": "Стратфорд-апон-Эйвон",
+            "pt": "Stratford-upon-Avon"
+          },
+          "question": {
+            "en": "In what city was William Shakespeare born?",
+            "ru": "В каком городе родился Уильям Шекспир?"
+          }
+        },
+        {
+          "s_qid": "Q5673",
+          "o_qid": "Q25331",
+          "sex": "male",
+          "subj": {
+            "en": "Hans Christian Andersen",
+            "ru": "Ханс Кристиан Андерсен",
+            "pt": "Hans Christian Andersen"
+          },
+          "answer": {
+            "en": "Odense",
+            "ru": "Оденсе",
+            "pt": "Odense"
+          },
+          "question": {
+            "en": "In what city was Hans Christian Andersen born?",
+            "ru": "В каком городе родился Ханс Кристиан Андерсен?"
+          }
+        }
+      ]
+    },
+    "author": {
+      "A": [
+        {
+          "s_qid": "Q170583",
+          "o_qid": "Q36322",
+          "sex": null,
+          "subj": {
+            "en": "Pride and Prejudice",
+            "ru": "Гордость и предубеждение",
+            "pt": "Orgulho e Preconceito"
+          },
+          "answer": {
+            "en": "Jane Austen",
+            "ru": "Джейн Остин",
+            "pt": "Jane Austen"
+          },
+          "question": {
+            "en": "Who is the author of Pride and Prejudice?",
+            "ru": "Кто автор произведения «Гордость и предубеждение»?"
+          }
+        },
+        {
+          "s_qid": "Q161531",
+          "o_qid": "Q7243",
+          "sex": null,
+          "subj": {
+            "en": "War and Peace",
+            "ru": "Война и мир",
+            "pt": "Guerra e Paz"
+          },
+          "answer": {
+            "en": "Leo Tolstoy",
+            "ru": "Лев Николаевич Толстой",
+            "pt": "Liev Tolstói"
+          },
+          "question": {
+            "en": "Who is the author of War and Peace?",
+            "ru": "Кто автор произведения «Война и мир»?"
+          }
+        },
+        {
+          "s_qid": "Q480",
+          "o_qid": "Q5682",
+          "sex": null,
+          "subj": {
+            "en": "Don Quixote",
+            "ru": "Дон Кихот",
+            "pt": "Dom Quixote"
+          },
+          "answer": {
+            "en": "Miguel de Cervantes",
+            "ru": "Мигель де Сервантес",
+            "pt": "Miguel de Cervantes"
+          },
+          "question": {
+            "en": "Who is the author of Don Quixote?",
+            "ru": "Кто автор произведения «Дон Кихот»?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q174596",
+          "o_qid": "Q4985",
+          "sex": null,
+          "subj": {
+            "en": "Moby-Dick",
+            "ru": "Моби Дик",
+            "pt": "Moby Dick"
+          },
+          "answer": {
+            "en": "Herman Melville",
+            "ru": "Герман Мелвилл",
+            "pt": "Herman Melville"
+          },
+          "question": {
+            "en": "Who is the author of Moby-Dick?",
+            "ru": "Кто автор произведения «Моби Дик»?"
+          }
+        },
+        {
+          "s_qid": "Q178869",
+          "o_qid": "Q5878",
+          "sex": null,
+          "subj": {
+            "en": "One Hundred Years of Solitude",
+            "ru": "Сто лет одиночества",
+            "pt": "Cem Anos de Solidão"
+          },
+          "answer": {
+            "en": "Gabriel García Márquez",
+            "ru": "Габриель Гарсиа Маркес",
+            "pt": "Gabriel García Márquez"
+          },
+          "question": {
+            "en": "Who is the author of One Hundred Years of Solitude?",
+            "ru": "Кто автор произведения «Сто лет одиночества»?"
+          }
+        },
+        {
+          "s_qid": "Q25338",
+          "o_qid": "Q2908",
+          "sex": null,
+          "subj": {
+            "en": "The Little Prince",
+            "ru": "Маленький принц",
+            "pt": "O Principezinho"
+          },
+          "answer": {
+            "en": "Antoine de Saint-Exupéry",
+            "ru": "Антуан де Сент-Экзюпери",
+            "pt": "Antoine de Saint-Exupéry"
+          },
+          "question": {
+            "en": "Who is the author of The Little Prince?",
+            "ru": "Кто автор произведения «Маленький принц»?"
+          }
+        }
+      ]
+    },
+    "composer": {
+      "A": [
+        {
+          "s_qid": "Q5064",
+          "o_qid": "Q254",
+          "sex": null,
+          "subj": {
+            "en": "The Magic Flute",
+            "ru": "Волшебная флейта",
+            "pt": "Die Zauberflöte"
+          },
+          "answer": {
+            "en": "Wolfgang Amadeus Mozart",
+            "ru": "Вольфганг Амадей Моцарт",
+            "pt": "Wolfgang Amadeus Mozart"
+          },
+          "question": {
+            "en": "Who was the composer of The Magic Flute?",
+            "ru": "Кто композитор произведения «Волшебная флейта»?"
+          }
+        },
+        {
+          "s_qid": "Q199786",
+          "o_qid": "Q7315",
+          "sex": null,
+          "subj": {
+            "en": "Swan Lake",
+            "ru": "Лебединое озеро",
+            "pt": "O Lago dos Cisnes"
+          },
+          "answer": {
+            "en": "Pyotr Ilyich Tchaikovsky",
+            "ru": "Пётр Ильич Чайковский",
+            "pt": "Piotr Ilitch Tchaikovsky"
+          },
+          "question": {
+            "en": "Who was the composer of Swan Lake?",
+            "ru": "Кто композитор произведения «Лебединое озеро»?"
+          }
+        },
+        {
+          "s_qid": "Q12016",
+          "o_qid": "Q1340",
+          "sex": null,
+          "subj": {
+            "en": "The Four Seasons",
+            "ru": "Времена года",
+            "pt": "As Quatro Estações"
+          },
+          "answer": {
+            "en": "Antonio Vivaldi",
+            "ru": "Антонио Вивальди",
+            "pt": "Antonio Vivaldi"
+          },
+          "question": {
+            "en": "Who was the composer of The Four Seasons?",
+            "ru": "Кто композитор произведения «Времена года»?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q206015",
+          "o_qid": "Q7314",
+          "sex": null,
+          "subj": {
+            "en": "The Rite of Spring",
+            "ru": "Весна священная",
+            "pt": "Le Sacre du Printemps"
+          },
+          "answer": {
+            "en": "Igor Stravinsky",
+            "ru": "Игорь Стравинский",
+            "pt": "Ígor Stravinski"
+          },
+          "question": {
+            "en": "Who was the composer of The Rite of Spring?",
+            "ru": "Кто композитор произведения «Весна священная»?"
+          }
+        },
+        {
+          "s_qid": "Q327331",
+          "o_qid": "Q1178",
+          "sex": null,
+          "subj": {
+            "en": "Boléro",
+            "ru": "Болеро",
+            "pt": "Bolero"
+          },
+          "answer": {
+            "en": "Maurice Ravel",
+            "ru": "Морис Равель",
+            "pt": "Maurice Ravel"
+          },
+          "question": {
+            "en": "Who was the composer of Boléro?",
+            "ru": "Кто композитор произведения «Болеро»?"
+          }
+        },
+        {
+          "s_qid": "Q207732",
+          "o_qid": "Q7302",
+          "sex": null,
+          "subj": {
+            "en": "Messiah",
+            "ru": "Мессия",
+            "pt": "O Messias"
+          },
+          "answer": {
+            "en": "George Frideric Handel",
+            "ru": "Георг Фридрих Гендель",
+            "pt": "Georg Friedrich Händel"
+          },
+          "question": {
+            "en": "Who was the composer of Messiah?",
+            "ru": "Кто композитор произведения «Мессия»?"
+          }
+        }
+      ]
+    },
+    "director": {
+      "A": [
+        {
+          "s_qid": "Q47703",
+          "o_qid": "Q56094",
+          "sex": null,
+          "subj": {
+            "en": "The Godfather",
+            "ru": "Крёстный отец",
+            "pt": "O Poderoso Chefão"
+          },
+          "answer": {
+            "en": "Francis Ford Coppola",
+            "ru": "Фрэнсис Форд Коппола",
+            "pt": "Francis Ford Coppola"
+          },
+          "question": {
+            "en": "Who was the director of The Godfather?",
+            "ru": "Кто режиссёр фильма «Крёстный отец»?"
+          }
+        },
+        {
+          "s_qid": "Q104123",
+          "o_qid": "Q3772",
+          "sex": null,
+          "subj": {
+            "en": "Pulp Fiction",
+            "ru": "Криминальное чтиво",
+            "pt": "Pulp Fiction"
+          },
+          "answer": {
+            "en": "Quentin Tarantino",
+            "ru": "Квентин Тарантино",
+            "pt": "Quentin Tarantino"
+          },
+          "question": {
+            "en": "Who was the director of Pulp Fiction?",
+            "ru": "Кто режиссёр фильма «Криминальное чтиво»?"
+          }
+        },
+        {
+          "s_qid": "Q103474",
+          "o_qid": "Q2001",
+          "sex": null,
+          "subj": {
+            "en": "2001: A Space Odyssey",
+            "ru": "Космическая одиссея 2001 года",
+            "pt": "2001: Odisseia no Espaço"
+          },
+          "answer": {
+            "en": "Stanley Kubrick",
+            "ru": "Стэнли Кубрик",
+            "pt": "Stanley Kubrick"
+          },
+          "question": {
+            "en": "Who was the director of 2001: A Space Odyssey?",
+            "ru": "Кто режиссёр фильма «Космическая одиссея 2001 года»?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q484048",
+          "o_qid": "Q217324",
+          "sex": null,
+          "subj": {
+            "en": "Amélie",
+            "ru": "Амели",
+            "pt": "O Fabuloso Destino de Amélie Poulain"
+          },
+          "answer": {
+            "en": "Jean-Pierre Jeunet",
+            "ru": "Жан-Пьер Жёне",
+            "pt": "Jean-Pierre Jeunet"
+          },
+          "question": {
+            "en": "Who was the director of Amélie?",
+            "ru": "Кто режиссёр фильма «Амели»?"
+          }
+        },
+        {
+          "s_qid": "Q155653",
+          "o_qid": "Q55400",
+          "sex": null,
+          "subj": {
+            "en": "Spirited Away",
+            "ru": "Унесённые призраками",
+            "pt": "A Viagem de Chihiro"
+          },
+          "answer": {
+            "en": "Hayao Miyazaki",
+            "ru": "Хаяо Миядзаки",
+            "pt": "Hayao Miyazaki"
+          },
+          "question": {
+            "en": "Who was the director of Spirited Away?",
+            "ru": "Кто режиссёр фильма «Унесённые призраками»?"
+          }
+        }
+      ]
+    },
+    "father": {
+      "A": [
+        {
+          "s_qid": "Q1149",
+          "o_qid": "Q1047",
+          "sex": "female",
+          "subj": {
+            "en": "Indira Gandhi",
+            "ru": "Индира Ганди",
+            "pt": "Indira Gandhi"
+          },
+          "answer": {
+            "en": "Jawaharlal Nehru",
+            "ru": "Джавахарлал Неру",
+            "pt": "Jawaharlal Nehru"
+          },
+          "question": {
+            "en": "Who is the father of Indira Gandhi?",
+            "ru": "Индира Ганди: кто её отец?"
+          }
+        },
+        {
+          "s_qid": "Q221364",
+          "o_qid": "Q40096",
+          "sex": "male",
+          "subj": {
+            "en": "Jaden Smith",
+            "ru": "Джейден Смит",
+            "pt": "Jaden Smith"
+          },
+          "answer": {
+            "en": "Will Smith",
+            "ru": "Уилл Смит",
+            "pt": "Will Smith"
+          },
+          "question": {
+            "en": "Who is the father of Jaden Smith?",
+            "ru": "Джейден Смит: кто его отец?"
+          }
+        },
+        {
+          "s_qid": "Q7996",
+          "o_qid": "Q49686",
+          "sex": "male",
+          "subj": {
+            "en": "Ivan the Terrible",
+            "ru": "Иван Грозный",
+            "pt": "Ivã IV"
+          },
+          "answer": {
+            "en": "Vasili III of Moscow",
+            "ru": "Василий III",
+            "pt": "Basílio III da Rússia"
+          },
+          "question": {
+            "en": "Who is the father of Ivan the Terrible?",
+            "ru": "Иван Грозный: кто его отец?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q311238",
+          "o_qid": "Q1203",
+          "sex": "male",
+          "subj": {
+            "en": "Sean Lennon",
+            "ru": "Шон Леннон",
+            "pt": "Sean Lennon"
+          },
+          "answer": {
+            "en": "John Lennon",
+            "ru": "Джон Леннон",
+            "pt": "John Lennon"
+          },
+          "question": {
+            "en": "Who is the father of Sean Lennon?",
+            "ru": "Шон Леннон: кто его отец?"
+          }
+        },
+        {
+          "s_qid": "Q14441",
+          "o_qid": "Q51535",
+          "sex": "female",
+          "subj": {
+            "en": "Liza Minnelli",
+            "ru": "Лайза Миннелли",
+            "pt": "Liza Minnelli"
+          },
+          "answer": {
+            "en": "Vincente Minnelli",
+            "ru": "Винсент Миннелли",
+            "pt": "Vincente Minnelli"
+          },
+          "question": {
+            "en": "Who is the father of Liza Minnelli?",
+            "ru": "Лайза Миннелли: кто её отец?"
+          }
+        }
+      ]
+    },
+    "mother": {
+      "A": [
+        {
+          "s_qid": "Q7742",
+          "o_qid": "Q151209",
+          "sex": "male",
+          "subj": {
+            "en": "Louis XIV of France",
+            "ru": "Людовик XIV",
+            "pt": "Luís XIV de França"
+          },
+          "answer": {
+            "en": "Anne of Austria",
+            "ru": "Анна Австрийская",
+            "pt": "Ana de Áustria"
+          },
+          "question": {
+            "en": "Who is the mother of Louis XIV of France?",
+            "ru": "Людовик XIV: кто его мать?"
+          }
+        },
+        {
+          "s_qid": "Q7207",
+          "o_qid": "Q80823",
+          "sex": "female",
+          "subj": {
+            "en": "Elizabeth I of England",
+            "ru": "Елизавета I",
+            "pt": "Isabel I de Inglaterra"
+          },
+          "answer": {
+            "en": "Anne Boleyn",
+            "ru": "Анна Болейн",
+            "pt": "Ana Bolena"
+          },
+          "question": {
+            "en": "Who is the mother of Elizabeth I of England?",
+            "ru": "Елизавета I: кто её мать?"
+          }
+        },
+        {
+          "s_qid": "Q47365",
+          "o_qid": "Q131706",
+          "sex": "female",
+          "subj": {
+            "en": "Marie Antoinette",
+            "ru": "Мария-Антуанетта",
+            "pt": "Maria Antonieta"
+          },
+          "answer": {
+            "en": "Maria Theresa of Austria",
+            "ru": "Мария Терезия",
+            "pt": "Maria Teresa da Áustria"
+          },
+          "question": {
+            "en": "Who is the mother of Marie Antoinette?",
+            "ru": "Мария-Антуанетта: кто её мать?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q9696",
+          "o_qid": "Q236540",
+          "sex": "male",
+          "subj": {
+            "en": "John F. Kennedy",
+            "ru": "Джон Фицджеральд Кеннеди",
+            "pt": "John F. Kennedy"
+          },
+          "answer": {
+            "en": "Rose Kennedy",
+            "ru": "Роза Элизабет Фицджеральд Кеннеди",
+            "pt": "Rose Elizabeth Fitzgerald Kennedy"
+          },
+          "question": {
+            "en": "Who is the mother of John F. Kennedy?",
+            "ru": "Джон Фицджеральд Кеннеди: кто его мать?"
+          }
+        },
+        {
+          "s_qid": "Q14441",
+          "o_qid": "Q11637",
+          "sex": "female",
+          "subj": {
+            "en": "Liza Minnelli",
+            "ru": "Лайза Миннелли",
+            "pt": "Liza Minnelli"
+          },
+          "answer": {
+            "en": "Judy Garland",
+            "ru": "Джуди Гарленд",
+            "pt": "Judy Garland"
+          },
+          "question": {
+            "en": "Who is the mother of Liza Minnelli?",
+            "ru": "Лайза Миннелли: кто её мать?"
+          }
+        },
+        {
+          "s_qid": "Q38370",
+          "o_qid": "Q207953",
+          "sex": "male",
+          "subj": {
+            "en": "Henry VIII of England",
+            "ru": "Генрих VIII Тюдор",
+            "pt": "Henrique VIII de Inglaterra"
+          },
+          "answer": {
+            "en": "Elizabeth of York",
+            "ru": "Елизавета Йоркская",
+            "pt": "Isabel de Iorque"
+          },
+          "question": {
+            "en": "Who is the mother of Henry VIII of England?",
+            "ru": "Генрих VIII Тюдор: кто его мать?"
+          }
+        }
+      ]
+    },
+    "occupation": {
+      "A": [
+        {
+          "s_qid": "Q25328",
+          "o_qid": "Q42973",
+          "sex": "male",
+          "subj": {
+            "en": "Antoni Gaudí",
+            "ru": "Антонио Гауди",
+            "pt": "Antoni Gaudí"
+          },
+          "answer": {
+            "en": "architect",
+            "ru": "архитектор",
+            "pt": "arquiteto"
+          },
+          "question": {
+            "en": "What is Antoni Gaudí's occupation?",
+            "ru": "Антонио Гауди — кто по профессии?"
+          }
+        },
+        {
+          "s_qid": "Q28614",
+          "o_qid": "Q10873124",
+          "sex": "male",
+          "subj": {
+            "en": "Garry Kasparov",
+            "ru": "Гарри Каспаров",
+            "pt": "Garry Kasparov"
+          },
+          "answer": {
+            "en": "chess player",
+            "ru": "шахматист",
+            "pt": "jogador de xadrez"
+          },
+          "question": {
+            "en": "What is Garry Kasparov's occupation?",
+            "ru": "Гарри Каспаров — кто по профессии?"
+          }
+        },
+        {
+          "s_qid": "Q131545",
+          "o_qid": "Q15855449",
+          "sex": "male",
+          "subj": {
+            "en": "Harry Houdini",
+            "ru": "Гарри Гудини",
+            "pt": "Harry Houdini"
+          },
+          "answer": {
+            "en": "magician",
+            "ru": "фокусник",
+            "pt": "mágico"
+          },
+          "question": {
+            "en": "What is Harry Houdini's occupation?",
+            "ru": "Гарри Гудини — кто по профессии?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q1189",
+          "o_qid": "Q4009406",
+          "sex": "male",
+          "subj": {
+            "en": "Usain Bolt",
+            "ru": "Усэйн Болт",
+            "pt": "Usain Bolt"
+          },
+          "answer": {
+            "en": "sprinter",
+            "ru": "бегун на короткие дистанции",
+            "pt": "velocista"
+          },
+          "question": {
+            "en": "What is Usain Bolt's occupation?",
+            "ru": "Усэйн Болт — кто по профессии?"
+          }
+        },
+        {
+          "s_qid": "Q37103",
+          "o_qid": "Q186360",
+          "sex": "female",
+          "subj": {
+            "en": "Florence Nightingale",
+            "ru": "Флоренс Найтингейл",
+            "pt": "Florence Nightingale"
+          },
+          "answer": {
+            "en": "nurse",
+            "ru": "медсестра",
+            "pt": "enfermeiro"
+          },
+          "question": {
+            "en": "What is Florence Nightingale's occupation?",
+            "ru": "Флоренс Найтингейл — кто по профессии?"
+          }
+        },
+        {
+          "s_qid": "Q39562",
+          "o_qid": "Q10843402",
+          "sex": "male",
+          "subj": {
+            "en": "Michael Phelps",
+            "ru": "Майкл Фелпс",
+            "pt": "Michael Phelps"
+          },
+          "answer": {
+            "en": "swimmer",
+            "ru": "пловец",
+            "pt": "nadador"
+          },
+          "question": {
+            "en": "What is Michael Phelps's occupation?",
+            "ru": "Майкл Фелпс — кто по профессии?"
+          }
+        }
+      ]
+    },
+    "country": {
+      "A": [
+        {
+          "s_qid": "Q43473",
+          "o_qid": "Q424",
+          "sex": null,
+          "subj": {
+            "en": "Angkor Wat",
+            "ru": "Ангкор-Ват",
+            "pt": "Angkor Wat"
+          },
+          "answer": {
+            "en": "Cambodia",
+            "ru": "Камбоджа",
+            "pt": "Camboja"
+          },
+          "question": {
+            "en": "In what country is Angkor Wat?",
+            "ru": "В какой стране находится Ангкор-Ват?"
+          }
+        },
+        {
+          "s_qid": "Q33910",
+          "o_qid": "Q408",
+          "sex": null,
+          "subj": {
+            "en": "Uluru",
+            "ru": "Улуру",
+            "pt": "Uluru"
+          },
+          "answer": {
+            "en": "Australia",
+            "ru": "Австралия",
+            "pt": "Austrália"
+          },
+          "question": {
+            "en": "In what country is Uluru?",
+            "ru": "В какой стране находится Улуру?"
+          }
+        },
+        {
+          "s_qid": "Q7296",
+          "o_qid": "Q924",
+          "sex": null,
+          "subj": {
+            "en": "Mount Kilimanjaro",
+            "ru": "Килиманджаро",
+            "pt": "Kilimanjaro"
+          },
+          "answer": {
+            "en": "Tanzania",
+            "ru": "Танзания",
+            "pt": "Tanzânia"
+          },
+          "question": {
+            "en": "In what country is Mount Kilimanjaro?",
+            "ru": "В какой стране находится Килиманджаро?"
+          }
+        }
+      ],
+      "B": [
+        {
+          "s_qid": "Q213360",
+          "o_qid": "Q258",
+          "sex": null,
+          "subj": {
+            "en": "Table Mountain",
+            "ru": "Столовая гора",
+            "pt": "Tábua do Cabo"
+          },
+          "answer": {
+            "en": "South Africa",
+            "ru": "ЮАР",
+            "pt": "África do Sul"
+          },
+          "question": {
+            "en": "In what country is Table Mountain?",
+            "ru": "В какой стране находится Столовая гора?"
+          }
+        },
+        {
+          "s_qid": "Q12495",
+          "o_qid": "Q878",
+          "sex": null,
+          "subj": {
+            "en": "Burj Khalifa",
+            "ru": "Бурдж-Халифа",
+            "pt": "Burj Khalifa"
+          },
+          "answer": {
+            "en": "United Arab Emirates",
+            "ru": "Объединённые Арабские Эмираты",
+            "pt": "Emirados Árabes Unidos"
+          },
+          "question": {
+            "en": "In what country is Burj Khalifa?",
+            "ru": "В какой стране находится Бурдж-Халифа?"
+          }
+        },
+        {
+          "s_qid": "Q190128",
+          "o_qid": "Q881",
+          "sex": null,
+          "subj": {
+            "en": "Ha Long Bay",
+            "ru": "Бухта Халонг",
+            "pt": "Baía de Ha Long"
+          },
+          "answer": {
+            "en": "Vietnam",
+            "ru": "Вьетнам",
+            "pt": "Vietname"
+          },
+          "question": {
+            "en": "In what country is Ha Long Bay?",
+            "ru": "В какой стране находится Бухта Халонг?"
+          }
+        }
+      ]
+    }
+  },
+  "nonce_answers": {
+    "note": "Invented answers of the right type per relation, scored for every real fact (role 'nonce' in candidates.jsonl): a floor showing how far the true answer is above noise. Approved by the user 2026-11-15. Not used for controls.",
+    "by_relation": {
+      "capital": [
+        {
+          "en": "Tremivar",
+          "ru": "Тремивар"
+        },
+        {
+          "en": "Tarvessin",
+          "ru": "Тарвессин"
+        }
+      ],
+      "capital of": [
+        {
+          "en": "Kelvaria",
+          "ru": "Кельвария"
+        },
+        {
+          "en": "Sundrelia",
+          "ru": "Сундрелия"
+        }
+      ],
+      "country": [
+        {
+          "en": "Velosia",
+          "ru": "Велосия"
+        },
+        {
+          "en": "Tessaran",
+          "ru": "Тессаран"
+        }
+      ],
+      "place of birth": [
+        {
+          "en": "Ferrovel",
+          "ru": "Ферровель"
+        },
+        {
+          "en": "Lindmarsk",
+          "ru": "Линдмарск"
+        }
+      ],
+      "occupation": [
+        {
+          "en": "glamberist",
+          "ru": "гламберист"
+        },
+        {
+          "en": "trovellier",
+          "ru": "тровельер"
+        }
+      ],
+      "author": [
+        {
+          "en": "Ardin Kessaly",
+          "ru": "Ардин Кессали"
+        },
+        {
+          "en": "Lorna Vestrip",
+          "ru": "Лорна Вестрип"
+        }
+      ],
+      "composer": [
+        {
+          "en": "Teodric Vanmeer",
+          "ru": "Теодрик Ванмер"
+        },
+        {
+          "en": "Ilsa Brovander",
+          "ru": "Ильза Бровандер"
+        }
+      ],
+      "director": [
+        {
+          "en": "Corran Velisky",
+          "ru": "Корран Велиски"
+        },
+        {
+          "en": "Mira Dunshoal",
+          "ru": "Мира Даншоул"
+        }
+      ],
+      "father": [
+        {
+          "en": "Halwin Roskar",
+          "ru": "Халвин Роскар"
+        },
+        {
+          "en": "Edric Tamsell",
+          "ru": "Эдрик Тамселл"
+        }
+      ],
+      "mother": [
+        {
+          "en": "Ysolde Farrin",
+          "ru": "Изольда Фаррин"
+        },
+        {
+          "en": "Marta Kelvane",
+          "ru": "Марта Келвейн"
+        }
+      ]
+    }
+  },
+  "applies_to": [
+    "facts_{en,ru,pt}.jsonl",
+    "controls_{en,ru,pt}.jsonl",
+    "candidates.jsonl"
+  ]
+}

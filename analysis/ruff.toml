@@ -1,0 +1,16 @@
+# Copyright (c) 2026 Daria Bikina
+# SPDX-License-Identifier: MIT
+
+line-length = 120
+target-version = "py314"
+extend-include = []
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+  "E501",   # long strings and comments; the formatter sets line length
+  "E741",   # l is the layer index throughout
+  "E731",   # short named lambdas for one-line helpers
+  "B023",   # closures here are called inside their own loop iteration
+  "B905",   # zip over arrays of equal length by construction
+]
